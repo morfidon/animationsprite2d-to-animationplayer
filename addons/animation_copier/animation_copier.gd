@@ -58,9 +58,15 @@ func copy_animations(animated_sprite: AnimatedSprite2D):
 	editor_interface.get_resource_filesystem().scan()
 
 func _find_or_create_animation_player(animated_sprite: AnimatedSprite2D) -> AnimationPlayer:
-	var animation_player = _find_animation_player(animated_sprite)
+	print("Finding or creating AnimationPlayer for AnimatedSprite2D: ", animated_sprite)
+	var animation_player = _find_animation_player_in_children(animated_sprite)
 	
 	if not animation_player:
+		print("No AnimationPlayer found in children. Checking parent.")
+		animation_player = _find_animation_player_in_parent(animated_sprite)
+	
+	if not animation_player:
+		print("No AnimationPlayer found in parent. Creating new AnimationPlayer.")
 		animation_player = AnimationPlayer.new()
 		animated_sprite.add_child(animation_player)
 		animation_player.owner = editor_interface.get_edited_scene_root()
@@ -68,13 +74,31 @@ func _find_or_create_animation_player(animated_sprite: AnimatedSprite2D) -> Anim
 	
 	return animation_player
 
-func _find_animation_player(node: Node) -> AnimationPlayer:
-	if node is AnimationPlayer:
-		return node
+# Check if AnimationPlayer exists in the direct parent of AnimatedSprite2D
+func _find_animation_player_in_parent(node: Node) -> AnimationPlayer:
+	var parent_node = node.get_parent()
+	print("Checking direct parent node for AnimationPlayer: ", parent_node)
+	if parent_node:
+		for child in parent_node.get_children():
+			if child is AnimationPlayer:
+				print("Found AnimationPlayer in direct parent node: ", child)
+				return child
+		print("Direct parent node is not AnimationPlayer, it is: ", parent_node.get_class())
+	print("No AnimationPlayer found in direct parent node.")
+	return null
+
+# Recursive search for AnimationPlayer in children nodes
+func _find_animation_player_in_children(node: Node) -> AnimationPlayer:
+	print("Checking children nodes for AnimationPlayer: ", node)
 	for child in node.get_children():
-		var found = _find_animation_player(child)
+		print("Checking child node: ", child)
+		if child is AnimationPlayer:
+			print("Found AnimationPlayer in child node: ", child)
+			return child
+		var found = _find_animation_player_in_children(child)
 		if found:
 			return found
+	print("No AnimationPlayer found in children nodes.")
 	return null
 
 func _print_animations(animation_player: AnimationPlayer):
