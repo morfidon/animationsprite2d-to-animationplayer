@@ -2,6 +2,8 @@
 
 This Godot plugin allows you to easily copy animations from an AnimatedSprite2D node to an AnimationPlayer node. It's particularly useful when transitioning from sprite-based animations to more complex AnimationPlayer-driven animations.
 
+![Alt text](images/copy-tool.png)
+
 ## Features
 
 - Automatically copies all animations from AnimatedSprite2D to AnimationPlayer
